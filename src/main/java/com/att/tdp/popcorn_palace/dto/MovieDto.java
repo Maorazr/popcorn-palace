@@ -5,21 +5,26 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MovieDto {
 
-    @NotBlank
+    private Long id;
+
+    @NotBlank(message = "Movie title must not be empty")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "Genre is mandatory")
     private String genre;
 
     @Positive
     private int duration;
 
-    @DecimalMin("0.0")
-    @DecimalMax("10.0")
-    private float rating;
+    @DecimalMin(value = "0.0", message = "Rating must be 0 or higher")
+    @DecimalMax(value = "10.0", message = "Rating must be 10 or lower")
+    private double rating;
 
-    @Min(1888) // first film year ever recorded :)
+    @Min(value = 1888, message = "Release year must be realistic")
     private int releaseYear;
 }
