@@ -1,6 +1,5 @@
 package com.att.tdp.popcorn_palace.controller;
 
-
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
 import com.att.tdp.popcorn_palace.service.MovieService;
@@ -8,7 +7,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -34,7 +32,7 @@ public class MovieController {
 
     // POST /movies/update/{movieTitle}
     @PostMapping("/update/{movieTitle}")
-    public ResponseEntity<Void> updateMovie(@PathVariable String movieTitle,@Valid @RequestBody MovieDto updatedMovieDto) {
+    public ResponseEntity<Void> updateMovie(@PathVariable String movieTitle, @Valid @RequestBody MovieDto updatedMovieDto) {
         movieService.updateMovie(movieTitle, updatedMovieDto);
         return ResponseEntity.ok().build();
     }

@@ -18,13 +18,13 @@ public class MovieDto {
     @NotBlank(message = "Genre is mandatory")
     private String genre;
 
-    @Positive
+    @Positive(message = "Duration must be positive")
     private int duration;
 
-    @DecimalMin(value = "0.0", message = "Rating must be 0 or higher")
-    @DecimalMax(value = "10.0", message = "Rating must be 10 or lower")
+    @DecimalMin(value = "0.0", message = "Rating must be at least 0")
+    @DecimalMax(value = "10.0", message = "Rating must be at most 10")
     private double rating;
 
-    @Min(value = 1888, message = "Release year must be realistic")
+    @Min(value = 1888, message = "Release year must be valid")
     private int releaseYear;
 }
