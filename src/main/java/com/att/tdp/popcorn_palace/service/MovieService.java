@@ -2,6 +2,8 @@ package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
+import com.att.tdp.popcorn_palace.exception.MovieAlreadyExistsException;
+import com.att.tdp.popcorn_palace.exception.ResourceNotFoundException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,10 @@ public class MovieService {
 
 
     public MovieDto createMovie(MovieDto movieDto) {
+        if (movieRepository.findByTitle(movieDto.getTitle()).isPresent()) {
+            throw new MovieAlreadyExistsException("Movie titled " + movieDto.getTitle() + " already exists");
+        }
+
         Movie movie = dtoToEntity(movieDto);
         Movie saved = movieRepository.save(movie);
         return entityToDto(saved);
@@ -34,7 +40,7 @@ public class MovieService {
 
     public void updateMovie(String title, MovieDto movieDto) {
         Movie existing = movieRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
 
         existing.setGenre(movieDto.getGenre());
         existing.setDuration(movieDto.getDuration());
@@ -46,7 +52,7 @@ public class MovieService {
 
     public void deleteMovie(String title) {
         Movie existing = movieRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
         movieRepository.delete(existing);
     }
 
