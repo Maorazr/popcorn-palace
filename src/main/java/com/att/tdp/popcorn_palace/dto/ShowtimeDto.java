@@ -7,20 +7,25 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ShowtimeDto {
 
-    @NotNull
+    private Long id;
+
+    @NotNull(message = "Movie ID is mandatory")
     private Long movieId;
 
-    @NotBlank
+    @NotBlank(message = "Theater name is mandatory")
     private String theater;
 
-    @NotNull
+    @Future(message = "Start time must be in the future")
     private LocalDateTime startTime;
 
-    @NotNull
+    @Future(message = "End time must be in the future")
     private LocalDateTime endTime;
 
-    @Positive
-    private float price;
+    @Positive(message = "Price must be positive")
+    private double price;
 }
