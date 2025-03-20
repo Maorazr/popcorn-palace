@@ -11,16 +11,15 @@ import java.util.UUID;
 @Builder
 public class BookingDto {
 
-    private UUID id; // for response only
+  private UUID id; // for response only
 
-    @NotNull(message = "Showtime ID is required")
-    private Long showtimeId;
+  @NotNull(message = "Showtime ID is required")
+  private Long showtimeId;
 
-    @NotNull(message = "Seat number is required")
+  @NotNull(message = "Seat number is required")
+  @Positive(message = "Seat number must be positive")
+  private int seatNumber;
 
-    @Positive(message = "Seat number must be positive")
-    private int seatNumber;
-
-    @NotNull(message = "User ID is required")
-    private UUID userId;
+  @NotNull(message = "User ID is required")
+  private UUID userId;
 }

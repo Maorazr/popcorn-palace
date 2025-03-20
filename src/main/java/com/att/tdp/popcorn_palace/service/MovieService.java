@@ -17,63 +17,65 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MovieService {
 
-    private final MovieRepository movieRepository;
+  private final MovieRepository movieRepository;
 
+  public List<MovieDto> getAllMovies() {
+    return movieRepository.findAll().stream().map(this::entityToDto).collect(Collectors.toList());
+  }
 
-    public List<MovieDto> getAllMovies() {
-        return movieRepository.findAll()
-                .stream()
-                .map(this::entityToDto)
-                .collect(Collectors.toList());
+  public MovieDto createMovie(MovieDto movieDto) {
+    if (movieRepository.findByTitle(movieDto.getTitle()).isPresent()) {
+      throw new MovieAlreadyExistsException(
+          "Movie titled " + movieDto.getTitle() + " already exists");
     }
 
+    Movie movie = dtoToEntity(movieDto);
+    Movie saved = movieRepository.save(movie);
+    return entityToDto(saved);
+  }
 
-    public MovieDto createMovie(MovieDto movieDto) {
-        if (movieRepository.findByTitle(movieDto.getTitle()).isPresent()) {
-            throw new MovieAlreadyExistsException("Movie titled " + movieDto.getTitle() + " already exists");
-        }
+  public void updateMovie(String title, MovieDto movieDto) {
+    Movie existing =
+        movieRepository
+            .findByTitle(title)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
 
-        Movie movie = dtoToEntity(movieDto);
-        Movie saved = movieRepository.save(movie);
-        return entityToDto(saved);
-    }
+    existing.setGenre(movieDto.getGenre());
+    existing.setDuration(movieDto.getDuration());
+    existing.setRating(movieDto.getRating());
+    existing.setReleaseYear(movieDto.getReleaseYear());
 
-    public void updateMovie(String title, MovieDto movieDto) {
-        Movie existing = movieRepository.findByTitle(title)
-                .orElseThrow(() -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
+    Movie updated = movieRepository.save(existing);
+  }
 
-        existing.setGenre(movieDto.getGenre());
-        existing.setDuration(movieDto.getDuration());
-        existing.setRating(movieDto.getRating());
-        existing.setReleaseYear(movieDto.getReleaseYear());
+  public void deleteMovie(String title) {
+    Movie existing =
+        movieRepository
+            .findByTitle(title)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
+    movieRepository.delete(existing);
+  }
 
-        Movie updated = movieRepository.save(existing);
-    }
+  private Movie dtoToEntity(MovieDto dto) {
+    return Movie.builder()
+        .title(dto.getTitle())
+        .genre(dto.getGenre())
+        .duration(dto.getDuration())
+        .rating(dto.getRating())
+        .releaseYear(dto.getReleaseYear())
+        .build();
+  }
 
-    public void deleteMovie(String title) {
-        Movie existing = movieRepository.findByTitle(title)
-                .orElseThrow(() -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
-        movieRepository.delete(existing);
-    }
-
-    private Movie dtoToEntity(MovieDto dto) {
-        return Movie.builder()
-                .title(dto.getTitle())
-                .genre(dto.getGenre())
-                .duration(dto.getDuration())
-                .rating(dto.getRating())
-                .releaseYear(dto.getReleaseYear())
-                .build();
-    }
-
-    private MovieDto entityToDto(Movie movie) {
-        return MovieDto.builder()
-                .id(movie.getId())
-                .title(movie.getTitle())
-                .genre(movie.getGenre())
-                .duration(movie.getDuration())
-                .rating(movie.getRating())
-                .releaseYear(movie.getReleaseYear())
-                .build();
-    }
+  private MovieDto entityToDto(Movie movie) {
+    return MovieDto.builder()
+        .id(movie.getId())
+        .title(movie.getTitle())
+        .genre(movie.getGenre())
+        .duration(movie.getDuration())
+        .rating(movie.getRating())
+        .releaseYear(movie.getReleaseYear())
+        .build();
+  }
 }

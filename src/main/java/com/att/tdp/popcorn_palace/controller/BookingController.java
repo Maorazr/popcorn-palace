@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.*;
 
 @RestController
@@ -17,12 +16,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BookingController {
 
-    private final BookingService bookingService;
+  private final BookingService bookingService;
 
-    // POST /bookings
-    @PostMapping
-    public ResponseEntity<Map<String, UUID>> addBooking(@Valid @RequestBody BookingDto bookingDto) {
-        UUID bookingId = bookingService.createBooking(bookingDto);
-        return ResponseEntity.ok(Map.of("id", bookingId));
-    }
+  // POST /bookings
+  @PostMapping
+  public ResponseEntity<Map<String, UUID>> addBooking(@Valid @RequestBody BookingDto bookingDto) {
+    UUID bookingId = bookingService.createBooking(bookingDto);
+    return ResponseEntity.ok(Map.of("id", bookingId));
+  }
 }
