@@ -1,7 +1,7 @@
 package com.att.tdp.popcorn_palace.service;
 
 import com.att.tdp.popcorn_palace.exception.MovieAlreadyExistsException;
-import com.att.tdp.popcorn_palace.exception.ResourceNotFoundException;
+import com.att.tdp.popcorn_palace.exception.MovieNotFoundException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import com.att.tdp.popcorn_palace.entity.Movie;
@@ -25,8 +25,7 @@ public class MovieService {
 
   public MovieDto createMovie(MovieDto movieDto) {
     if (movieRepository.findByTitle(movieDto.getTitle()).isPresent()) {
-      throw new MovieAlreadyExistsException(
-          "Movie titled " + movieDto.getTitle() + " already exists");
+      throw new MovieAlreadyExistsException(movieDto.getTitle());
     }
 
     Movie movie = dtoToEntity(movieDto);
@@ -35,27 +34,24 @@ public class MovieService {
   }
 
   public void updateMovie(String title, MovieDto movieDto) {
-    Movie existing =
-        movieRepository
-            .findByTitle(title)
-            .orElseThrow(
-                () -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
+    Movie existing = findMovieByTitle(title);
 
     existing.setGenre(movieDto.getGenre());
     existing.setDuration(movieDto.getDuration());
     existing.setRating(movieDto.getRating());
     existing.setReleaseYear(movieDto.getReleaseYear());
 
-    Movie updated = movieRepository.save(existing);
+    movieRepository.save(existing);
   }
 
   public void deleteMovie(String title) {
-    Movie existing =
-        movieRepository
-            .findByTitle(title)
-            .orElseThrow(
-                () -> new ResourceNotFoundException("The movie " + title + " doesn't exists"));
+    Movie existing = findMovieByTitle(title);
     movieRepository.delete(existing);
+  }
+
+  private Movie findMovieByTitle(String title) {
+    return movieRepository.findByTitle(title)
+        .orElseThrow(() -> new MovieNotFoundException(title));
   }
 
   private Movie dtoToEntity(MovieDto dto) {

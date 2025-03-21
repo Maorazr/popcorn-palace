@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.att.tdp.popcorn_palace.service.MovieService;
+import com.att.tdp.popcorn_palace.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/movies")
@@ -37,12 +39,12 @@ public class MovieController {
   public ResponseEntity<Void> updateMovie(
       @PathVariable String movieTitle, @Valid @RequestBody MovieDto updatedMovieDto) {
     movieService.updateMovie(movieTitle, updatedMovieDto);
-    return ResponseEntity.ok().build();
+    return ResponseUtils.ok();
   }
 
   @DeleteMapping("/{movieTitle}")
   public ResponseEntity<Void> deleteMovie(@PathVariable String movieTitle) {
     movieService.deleteMovie(movieTitle);
-    return ResponseEntity.ok().build();
+    return ResponseUtils.ok();
   }
 }

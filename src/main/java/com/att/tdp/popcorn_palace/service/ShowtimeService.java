@@ -1,7 +1,8 @@
 package com.att.tdp.popcorn_palace.service;
 
+import com.att.tdp.popcorn_palace.exception.MovieNotFoundException;
 import com.att.tdp.popcorn_palace.exception.OverlappingShowtimeException;
-import com.att.tdp.popcorn_palace.exception.ResourceNotFoundException;
+import com.att.tdp.popcorn_palace.exception.ShowtimeNotFoundException;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
@@ -17,8 +18,8 @@ public class ShowtimeService {
   private final ShowtimeRepository showtimeRepository;
   private final MovieRepository movieRepository;
 
-  public ShowtimeDto getShowtimeById(Long showtimeId) {
-    return entityToDto(findShowtimeById(showtimeId));
+  public ShowtimeDto getShowtimeById(Long id) {
+    return entityToDto(findShowtimeById(id));
   }
 
   public ShowtimeDto createShowtime(ShowtimeDto showtimeDto) {
@@ -29,8 +30,7 @@ public class ShowtimeService {
             -1L, showtimeDto.getTheater(), showtimeDto.getStartTime(), showtimeDto.getEndTime());
 
     if (hasConflict) {
-      throw new OverlappingShowtimeException(
-          "Cannot create showtime; it overlaps in theater " + showtimeDto.getTheater());
+      throw new OverlappingShowtimeException(showtimeDto.getTheater());
     }
 
     Showtime showtime = dtoToEntity(showtimeDto, movie);
@@ -39,8 +39,8 @@ public class ShowtimeService {
     return entityToDto(savedShowtime);
   }
 
-  public void updateShowtime(Long showtimeId, ShowtimeDto showtimeDto) {
-    Showtime existingShowtime = findShowtimeById(showtimeId);
+  public void updateShowtime(Long id, ShowtimeDto showtimeDto) {
+    Showtime existingShowtime = findShowtimeById(id);
 
     Movie movie = findMovieById(showtimeDto.getMovieId());
 
@@ -53,24 +53,16 @@ public class ShowtimeService {
     showtimeRepository.save(existingShowtime);
   }
 
-  public void deleteShowtime(Long showtimeId) {
-    showtimeRepository.delete(findShowtimeById(showtimeId));
+  public void deleteShowtime(Long id) {
+    showtimeRepository.delete(findShowtimeById(id));
   }
 
-  private Showtime findShowtimeById(Long showtimeId) {
-    return showtimeRepository
-        .findById(showtimeId)
-        .orElseThrow(
-            () ->
-                new ResourceNotFoundException(
-                    "Showtime not found\n" + "showtimeId: " + showtimeId));
+  private Showtime findShowtimeById(Long id) {
+    return showtimeRepository.findById(id).orElseThrow(() -> new ShowtimeNotFoundException(id));
   }
 
-  private Movie findMovieById(Long movieId) {
-    return movieRepository
-        .findById(movieId)
-        .orElseThrow(
-            () -> new ResourceNotFoundException("Movie not found\n" + "movieId: " + movieId));
+  private Movie findMovieById(Long id) {
+    return movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
   }
 
   private Showtime dtoToEntity(ShowtimeDto dto, Movie movie) {

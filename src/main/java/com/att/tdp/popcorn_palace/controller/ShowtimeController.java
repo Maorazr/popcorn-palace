@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.att.tdp.popcorn_palace.service.ShowtimeService;
+import com.att.tdp.popcorn_palace.util.ResponseUtils;
 import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
 import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +37,12 @@ public class ShowtimeController {
   public ResponseEntity<Void> updateShowtime(
       @PathVariable Long showtimeId, @Valid @RequestBody ShowtimeDto updatedShowtimeDto) {
     showtimeService.updateShowtime(showtimeId, updatedShowtimeDto);
-    return ResponseEntity.ok().build();
+    return ResponseUtils.ok();
   }
 
   @DeleteMapping("/{showtimeId}")
   public ResponseEntity<Void> deleteShowtime(@PathVariable Long showtimeId) {
     showtimeService.deleteShowtime(showtimeId);
-    return ResponseEntity.ok().build();
+    return ResponseUtils.ok();
   }
 }

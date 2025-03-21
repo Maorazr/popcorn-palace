@@ -1,5 +1,7 @@
 package com.att.tdp.popcorn_palace.service;
 
+import com.att.tdp.popcorn_palace.exception.SeatAlreadyBookedException;
+import com.att.tdp.popcorn_palace.exception.ShowtimeNotFoundException;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
 import com.att.tdp.popcorn_palace.repository.BookingRepository;
 import com.att.tdp.popcorn_palace.entity.Showtime;
@@ -21,14 +23,14 @@ public class BookingService {
     Showtime showtime =
         showtimeRepository
             .findById(bookingDto.getShowtimeId())
-            .orElseThrow(() -> new RuntimeException("Showtime not found"));
+            .orElseThrow(() -> new ShowtimeNotFoundException(bookingDto.getShowtimeId()));
 
     boolean seatExists =
         bookingRepository.existsByShowtimeIdAndSeatNumber(
             bookingDto.getShowtimeId(), bookingDto.getSeatNumber());
 
     if (seatExists) {
-      throw new RuntimeException("Seat is already booked");
+      throw new SeatAlreadyBookedException(bookingDto.getShowtimeId(), bookingDto.getSeatNumber());
     }
 
     Booking booking =
