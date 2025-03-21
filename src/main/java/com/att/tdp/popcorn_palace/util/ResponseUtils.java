@@ -9,6 +9,4 @@ public class ResponseUtils {
   public static ResponseEntity<Void> ok() {
     return ResponseEntity.ok().build();
   }
-
-
 }
