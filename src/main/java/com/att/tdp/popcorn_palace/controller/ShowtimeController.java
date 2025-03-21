@@ -29,7 +29,7 @@ public class ShowtimeController {
 
   @PostMapping
   public ResponseEntity<ShowtimeDto> addShowtime(@Valid @RequestBody ShowtimeDto showtimeDto) {
-    ShowtimeDto savedShowtime = showtimeService.createShowtime(showtimeDto);
+    ShowtimeDto savedShowtime = showtimeService.addShowtime(showtimeDto);
     return ResponseEntity.ok(savedShowtime);
   }
 

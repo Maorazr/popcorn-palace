@@ -22,7 +22,7 @@ public class BookingController {
 
   @PostMapping
   public ResponseEntity<Map<String, UUID>> addBooking(@Valid @RequestBody BookingDto bookingDto) {
-    UUID bookingId = bookingService.createBooking(bookingDto);
+    UUID bookingId = bookingService.addBooking(bookingDto);
     return ResponseEntity.ok(Map.of("id", bookingId));
   }
 }

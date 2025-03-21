@@ -1,44 +1,51 @@
 package com.att.tdp.popcorn_palace.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
-
 import com.att.tdp.popcorn_palace.dto.MovieDto;
 import com.att.tdp.popcorn_palace.exception.BadRequestException;
+import com.att.tdp.popcorn_palace.exception.MovieNotFoundException;
 import com.att.tdp.popcorn_palace.service.MovieService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-@WebMvcTest(MovieController.class)
+import static org.mockito.Mockito.*;
+
 public class MovieControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
-
-  @MockitoBean
+  @Mock
   private MovieService movieService;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  @InjectMocks
+  private MovieController movieController;
+
+  private AutoCloseable mocks;
+
 
   @BeforeEach
   void setUp() {
+    mocks = MockitoAnnotations.openMocks(this);
+  }
 
+  @AfterEach
+  void tearDown() throws Exception {
+    mocks.close();
   }
 
   @Test
-  @DisplayName("Test fetching all movies from the controller")
-  void testGetAllMovies() throws Exception {
-    MovieDto testMovieDto = MovieDto.builder()
+  @DisplayName("getAllMovies() - returns a list of movies (200 OK)")
+  void testGetAllMovies() {
+    MovieDto sampleMovie = MovieDto.builder()
         .id(1L)
         .title("Sallah Shabati")
         .genre("Bourekas")
@@ -47,21 +54,21 @@ public class MovieControllerTest {
         .releaseYear(1964)
         .build();
 
-    when(movieService.getAllMovies()).thenReturn(List.of(testMovieDto));
+    when(movieService.getAllMovies()).thenReturn(List.of(sampleMovie));
 
-    mockMvc.perform(get("/movies/all"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.size()").value(1))
-        .andExpect(jsonPath("$[0].title").value("Sallah Shabati"))
-        .andExpect(jsonPath("$[0].genre").value("Bourekas"));
+    ResponseEntity<List<MovieDto>> response = movieController.getAllMovies();
 
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals("Sallah Shabati", response.getBody().getFirst().getTitle());
 
     verify(movieService, times(1)).getAllMovies();
   }
 
   @Test
-  @DisplayName("Test adding a movie - success")
-  void testAddMovie_Success() throws Exception {
+  @DisplayName("addMovie() - adds a movie (200 OK)")
+  void testAddMovie_Success() {
     MovieDto requestDto = MovieDto.builder()
         .title("The Green Mile")
         .genre("Drama")
@@ -70,7 +77,7 @@ public class MovieControllerTest {
         .releaseYear(1999)
         .build();
 
-    MovieDto responseDto = MovieDto.builder()
+    MovieDto createdDto = MovieDto.builder()
         .id(1L)
         .title("The Green Mile")
         .genre("Drama")
@@ -79,24 +86,22 @@ public class MovieControllerTest {
         .releaseYear(1999)
         .build();
 
-    when(movieService.createMovie(any(MovieDto.class))).thenReturn(requestDto);
+    when(movieService.addMovie(any(MovieDto.class))).thenReturn(createdDto);
 
-    mockMvc.perform(post("/movies")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(requestDto)))
+    ResponseEntity<MovieDto> response = movieController.addMovie(requestDto);
 
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.title").value("The Green Mile"))
-        .andExpect(jsonPath("$.genre").value("Drama"))
-        .andExpect(jsonPath("$.duration").value(189));
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals("The Green Mile", response.getBody().getTitle());
 
-    verify(movieService, times(1)).createMovie(any(MovieDto.class));
+    verify(movieService, times(1)).addMovie(any(MovieDto.class));
   }
 
   @Test
-  @DisplayName("Test adding a movie - failure")
-  void testAddMovie_Failure() throws Exception {
-    MovieDto invalidMovieDto = MovieDto.builder()
+  @DisplayName("addMovie() - failure (BadRequestException)")
+  void testAddMovie_Failure() {
+    MovieDto invalidDto = MovieDto.builder()
         .title("")
         .genre("Drama")
         .duration(189)
@@ -104,7 +109,90 @@ public class MovieControllerTest {
         .releaseYear(1999)
         .build();
 
-    when(movieService.createMovie(any(MovieDto.class)))
+    when(movieService.addMovie(any(MovieDto.class)))
         .thenThrow(new BadRequestException("Invalid movie title"));
+
+    BadRequestException ex = assertThrows(
+        BadRequestException.class,
+        () -> movieController.addMovie(invalidDto)
+    );
+
+    assertEquals("Bad Request: Invalid movie title", ex.getMessage());
+
+    verify(movieService, times(1)).addMovie(any(MovieDto.class));
+  }
+
+  @Test
+  @DisplayName("updateMovie() - success (200 OK)")
+  void testUpdateMovie_Success() {
+    MovieDto updatedDto = MovieDto.builder()
+        .id(1L)
+        .title("The Green Mile")
+        .genre("Drama")
+        .duration(189)
+        .rating(8.6)
+        .releaseYear(1999)
+        .build();
+
+    doNothing().when(movieService).updateMovie(eq("The Green Mile"), any(MovieDto.class));
+
+    ResponseEntity<Void> response = movieController.updateMovie("The Green Mile", updatedDto);
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    verify(movieService, times(1)).updateMovie(eq("The Green Mile"), any(MovieDto.class));
+  }
+
+  @Test
+  @DisplayName("updateMovie() - movie not found (MovieNotFoundException)")
+  void testUpdateMovie_NotFound() {
+    MovieDto updatedDto = MovieDto.builder()
+        .title("NonExistent")
+        .genre("Drama")
+        .build();
+
+    doThrow(new MovieNotFoundException("Unknown"))
+        .when(movieService).updateMovie(eq("Unknown"), any(MovieDto.class));
+
+
+    MovieNotFoundException ex = assertThrows(
+        MovieNotFoundException.class,
+        () -> movieController.updateMovie("Unknown", updatedDto)
+    );
+
+    assertEquals("Movie not found with title = 'Unknown'", ex.getMessage());
+
+    verify(movieService, times(1)).updateMovie(eq("Unknown"), any(MovieDto.class));
+  }
+
+
+  @Test
+  @DisplayName("deleteMovie() - success (200 OK)")
+  void testDeleteMovie_Success() {
+    doNothing().when(movieService).deleteMovie("The Green Mile");
+
+    ResponseEntity<Void> response = movieController.deleteMovie("The Green Mile");
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    verify(movieService, times(1)).deleteMovie("The Green Mile");
+  }
+
+  @Test
+  @DisplayName("deleteMovie() - movie not found (MovieNotFoundException)")
+  void testDeleteMovie_NotFound() {
+    doThrow(new MovieNotFoundException("Unknown"))
+        .when(movieService).deleteMovie("Unknown");
+
+    MovieNotFoundException ex = assertThrows(
+        MovieNotFoundException.class,
+        () -> movieController.deleteMovie("Unknown")
+    );
+
+    assertEquals("Movie not found with title = 'Unknown'", ex.getMessage());
+
+    verify(movieService, times(1)).deleteMovie("Unknown");
   }
 }

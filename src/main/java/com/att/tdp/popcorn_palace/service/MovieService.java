@@ -23,7 +23,7 @@ public class MovieService {
     return movieRepository.findAll().stream().map(this::entityToDto).collect(Collectors.toList());
   }
 
-  public MovieDto createMovie(MovieDto movieDto) {
+  public MovieDto addMovie(MovieDto movieDto) {
     if (movieRepository.findByTitle(movieDto.getTitle()).isPresent()) {
       throw new MovieAlreadyExistsException(movieDto.getTitle());
     }

@@ -24,7 +24,7 @@ public class ShowtimeService {
     return entityToDto(findShowtimeById(id));
   }
 
-  public ShowtimeDto createShowtime(ShowtimeDto showtimeDto) {
+  public ShowtimeDto addShowtime(ShowtimeDto showtimeDto) {
     Movie movie = findMovieById(showtimeDto.getMovieId());
 
     boolean hasConflict =

@@ -21,7 +21,7 @@ public class BookingService {
   private final BookingRepository bookingRepository;
   private final ShowtimeRepository showtimeRepository;
 
-  public UUID createBooking(BookingDto bookingDto) {
+  public UUID addBooking(BookingDto bookingDto) {
     Showtime showtime =
         showtimeRepository
             .findById(bookingDto.getShowtimeId())
