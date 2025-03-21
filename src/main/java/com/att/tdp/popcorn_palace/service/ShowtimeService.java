@@ -1,14 +1,14 @@
 package com.att.tdp.popcorn_palace.service;
 
-import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
-import com.att.tdp.popcorn_palace.entity.Movie;
-import com.att.tdp.popcorn_palace.entity.Showtime;
 import com.att.tdp.popcorn_palace.exception.OverlappingShowtimeException;
 import com.att.tdp.popcorn_palace.exception.ResourceNotFoundException;
-import com.att.tdp.popcorn_palace.repository.MovieRepository;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
-import lombok.RequiredArgsConstructor;
+import com.att.tdp.popcorn_palace.repository.MovieRepository;
+import com.att.tdp.popcorn_palace.dto.ShowtimeDto;
+import com.att.tdp.popcorn_palace.entity.Showtime;
+import com.att.tdp.popcorn_palace.entity.Movie;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

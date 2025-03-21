@@ -1,16 +1,16 @@
 package com.att.tdp.popcorn_palace.service;
 
-import com.att.tdp.popcorn_palace.dto.MovieDto;
-import com.att.tdp.popcorn_palace.entity.Movie;
 import com.att.tdp.popcorn_palace.exception.MovieAlreadyExistsException;
 import com.att.tdp.popcorn_palace.exception.ResourceNotFoundException;
 import com.att.tdp.popcorn_palace.repository.MovieRepository;
+import com.att.tdp.popcorn_palace.dto.MovieDto;
+import com.att.tdp.popcorn_palace.entity.Movie;
+import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @Transactional

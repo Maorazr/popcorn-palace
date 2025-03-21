@@ -1,12 +1,12 @@
 package com.att.tdp.popcorn_palace.service;
 
-import com.att.tdp.popcorn_palace.dto.BookingDto;
-import com.att.tdp.popcorn_palace.entity.Booking;
-import com.att.tdp.popcorn_palace.entity.Showtime;
-import com.att.tdp.popcorn_palace.repository.BookingRepository;
 import com.att.tdp.popcorn_palace.repository.ShowtimeRepository;
-import lombok.RequiredArgsConstructor;
+import com.att.tdp.popcorn_palace.repository.BookingRepository;
+import com.att.tdp.popcorn_palace.entity.Showtime;
+import com.att.tdp.popcorn_palace.entity.Booking;
+import com.att.tdp.popcorn_palace.dto.BookingDto;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 

@@ -1,7 +1,11 @@
 package com.att.tdp.popcorn_palace.dto;
 
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.UUID;
 
@@ -11,7 +15,7 @@ import java.util.UUID;
 @Builder
 public class BookingDto {
 
-  private UUID id; // for response only
+  private UUID id;
 
   @NotNull(message = "Showtime ID is required")
   private Long showtimeId;

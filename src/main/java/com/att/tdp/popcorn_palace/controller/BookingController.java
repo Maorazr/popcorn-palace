@@ -1,15 +1,17 @@
 package com.att.tdp.popcorn_palace.controller;
 
-import com.att.tdp.popcorn_palace.dto.BookingDto;
-import com.att.tdp.popcorn_palace.entity.Booking;
-import com.att.tdp.popcorn_palace.repository.BookingRepository;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import com.att.tdp.popcorn_palace.service.BookingService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import com.att.tdp.popcorn_palace.dto.BookingDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/bookings")
@@ -18,7 +20,6 @@ public class BookingController {
 
   private final BookingService bookingService;
 
-  // POST /bookings
   @PostMapping
   public ResponseEntity<Map<String, UUID>> addBooking(@Valid @RequestBody BookingDto bookingDto) {
     UUID bookingId = bookingService.createBooking(bookingDto);
