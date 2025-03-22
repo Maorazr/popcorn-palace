@@ -23,14 +23,11 @@ import static org.mockito.Mockito.*;
 
 public class MovieControllerTest {
 
-  @Mock
-  private MovieService movieService;
+  @Mock private MovieService movieService;
 
-  @InjectMocks
-  private MovieController movieController;
+  @InjectMocks private MovieController movieController;
 
   private AutoCloseable mocks;
-
 
   @BeforeEach
   void setUp() {
@@ -43,16 +40,17 @@ public class MovieControllerTest {
   }
 
   @Test
-  @DisplayName("getAllMovies() - returns a list of movies (200 OK)")
+  @DisplayName("get all movies and return status 200 OK")
   void testGetAllMovies() {
-    MovieDto sampleMovie = MovieDto.builder()
-        .id(1L)
-        .title("Sallah Shabati")
-        .genre("Bourekas")
-        .duration(110)
-        .rating(7.2)
-        .releaseYear(1964)
-        .build();
+    MovieDto sampleMovie =
+        MovieDto.builder()
+            .id(1L)
+            .title("Sallah Shabati")
+            .genre("Bourekas")
+            .duration(110)
+            .rating(7.2)
+            .releaseYear(1964)
+            .build();
 
     when(movieService.getAllMovies()).thenReturn(List.of(sampleMovie));
 
@@ -67,24 +65,26 @@ public class MovieControllerTest {
   }
 
   @Test
-  @DisplayName("addMovie() - adds a movie (200 OK)")
+  @DisplayName("adds a movie and returns status 200 OK")
   void testAddMovie_Success() {
-    MovieDto requestDto = MovieDto.builder()
-        .title("The Green Mile")
-        .genre("Drama")
-        .duration(189)
-        .rating(8.6)
-        .releaseYear(1999)
-        .build();
+    MovieDto requestDto =
+        MovieDto.builder()
+            .title("The Green Mile")
+            .genre("Drama")
+            .duration(189)
+            .rating(8.6)
+            .releaseYear(1999)
+            .build();
 
-    MovieDto createdDto = MovieDto.builder()
-        .id(1L)
-        .title("The Green Mile")
-        .genre("Drama")
-        .duration(189)
-        .rating(8.6)
-        .releaseYear(1999)
-        .build();
+    MovieDto createdDto =
+        MovieDto.builder()
+            .id(1L)
+            .title("The Green Mile")
+            .genre("Drama")
+            .duration(189)
+            .rating(8.6)
+            .releaseYear(1999)
+            .build();
 
     when(movieService.addMovie(any(MovieDto.class))).thenReturn(createdDto);
 
@@ -99,23 +99,22 @@ public class MovieControllerTest {
   }
 
   @Test
-  @DisplayName("addMovie() - failure (BadRequestException)")
+  @DisplayName("fails to add a movie throws BadRequestException")
   void testAddMovie_Failure() {
-    MovieDto invalidDto = MovieDto.builder()
-        .title("")
-        .genre("Drama")
-        .duration(189)
-        .rating(8.6)
-        .releaseYear(1999)
-        .build();
+    MovieDto invalidDto =
+        MovieDto.builder()
+            .title("")
+            .genre("Drama")
+            .duration(189)
+            .rating(8.6)
+            .releaseYear(1999)
+            .build();
 
     when(movieService.addMovie(any(MovieDto.class)))
         .thenThrow(new BadRequestException("Invalid movie title"));
 
-    BadRequestException ex = assertThrows(
-        BadRequestException.class,
-        () -> movieController.addMovie(invalidDto)
-    );
+    BadRequestException ex =
+        assertThrows(BadRequestException.class, () -> movieController.addMovie(invalidDto));
 
     assertEquals("Bad Request: Invalid movie title", ex.getMessage());
 
@@ -123,16 +122,17 @@ public class MovieControllerTest {
   }
 
   @Test
-  @DisplayName("updateMovie() - success (200 OK)")
+  @DisplayName("update a movie and return status 200 OK")
   void testUpdateMovie_Success() {
-    MovieDto updatedDto = MovieDto.builder()
-        .id(1L)
-        .title("The Green Mile")
-        .genre("Drama")
-        .duration(189)
-        .rating(8.6)
-        .releaseYear(1999)
-        .build();
+    MovieDto updatedDto =
+        MovieDto.builder()
+            .id(1L)
+            .title("The Green Mile")
+            .genre("Drama")
+            .duration(189)
+            .rating(8.6)
+            .releaseYear(1999)
+            .build();
 
     doNothing().when(movieService).updateMovie(eq("The Green Mile"), any(MovieDto.class));
 
@@ -145,30 +145,25 @@ public class MovieControllerTest {
   }
 
   @Test
-  @DisplayName("updateMovie() - movie not found (MovieNotFoundException)")
+  @DisplayName("fails to update a movie throws MovieNotFoundException ")
   void testUpdateMovie_NotFound() {
-    MovieDto updatedDto = MovieDto.builder()
-        .title("NonExistent")
-        .genre("Drama")
-        .build();
+    MovieDto updatedDto = MovieDto.builder().title("NonExistent").genre("Drama").build();
 
     doThrow(new MovieNotFoundException("Unknown"))
-        .when(movieService).updateMovie(eq("Unknown"), any(MovieDto.class));
+        .when(movieService)
+        .updateMovie(eq("Unknown"), any(MovieDto.class));
 
-
-    MovieNotFoundException ex = assertThrows(
-        MovieNotFoundException.class,
-        () -> movieController.updateMovie("Unknown", updatedDto)
-    );
+    MovieNotFoundException ex =
+        assertThrows(
+            MovieNotFoundException.class, () -> movieController.updateMovie("Unknown", updatedDto));
 
     assertEquals("Movie not found with title = 'Unknown'", ex.getMessage());
 
     verify(movieService, times(1)).updateMovie(eq("Unknown"), any(MovieDto.class));
   }
 
-
   @Test
-  @DisplayName("deleteMovie() - success (200 OK)")
+  @DisplayName("delete a movie and returns status 200 OK")
   void testDeleteMovie_Success() {
     doNothing().when(movieService).deleteMovie("The Green Mile");
 
@@ -181,15 +176,12 @@ public class MovieControllerTest {
   }
 
   @Test
-  @DisplayName("deleteMovie() - movie not found (MovieNotFoundException)")
+  @DisplayName("fails to delete a movie throws MovieNotFoundException")
   void testDeleteMovie_NotFound() {
-    doThrow(new MovieNotFoundException("Unknown"))
-        .when(movieService).deleteMovie("Unknown");
+    doThrow(new MovieNotFoundException("Unknown")).when(movieService).deleteMovie("Unknown");
 
-    MovieNotFoundException ex = assertThrows(
-        MovieNotFoundException.class,
-        () -> movieController.deleteMovie("Unknown")
-    );
+    MovieNotFoundException ex =
+        assertThrows(MovieNotFoundException.class, () -> movieController.deleteMovie("Unknown"));
 
     assertEquals("Movie not found with title = 'Unknown'", ex.getMessage());
 
