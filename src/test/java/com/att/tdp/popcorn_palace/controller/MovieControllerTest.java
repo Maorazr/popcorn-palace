@@ -116,7 +116,7 @@ public class MovieControllerTest {
     BadRequestException ex =
         assertThrows(BadRequestException.class, () -> movieController.addMovie(invalidDto));
 
-    assertEquals("Bad Request: Invalid movie title", ex.getMessage());
+    assertEquals("Invalid movie title", ex.getMessage());
 
     verify(movieService, times(1)).addMovie(any(MovieDto.class));
   }

@@ -155,7 +155,7 @@ class ShowtimeControllerTest {
     BadRequestException ex =
         assertThrows(BadRequestException.class, () -> controller.addShowtime(dto));
 
-    assertEquals("Bad Request: Invalid showtime data", ex.getMessage());
+    assertEquals("Invalid showtime data", ex.getMessage());
 
     verify(service, times(1)).addShowtime(any(ShowtimeDto.class));
   }
