@@ -1,19 +1,20 @@
 # Instructions
 
 ## Table of Contents
-1. [Project Overview](#project-overview)  
-2. [Requirements](#requirements)  
-3. [Local Setup](#local-setup)  
-    - [1. Start the Database (PostgreSQL) with Docker](#1-start-the-database-postgresql-with-docker)  
-    - [2. Build and Run the Spring Boot App](#2-build-and-run-the-spring-boot-app)  
-4. [Project Structure](#project-structure)  
-5. [Testing](#testing)  
-6. [API Endpoints](#api-endpoints)  
-    - [Movies](#movies)  
-    - [Showtimes](#showtimes)  
-    - [Bookings](#bookings)  
-7. [Error Handling](#error-handling)  
-8. [Notes and Common Issues](#notes-and-common-issues)  
+1. [Project Overview](#project-overview)
+2. [Requirements](#requirements)
+3. [Getting the Code](#getting-the-code)
+4. [Local Setup](#local-setup)
+   - [1. Start the Database (PostgreSQL) with Docker](#1-start-the-database-postgresql-with-docker)
+   - [2. Build and Run the Spring Boot App](#2-build-and-run-the-spring-boot-app)
+5. [Project Structure](#project-structure)
+6. [Testing](#testing)
+7. [API Endpoints](#api-endpoints)
+   - [Movies](#movies)
+   - [Showtimes](#showtimes)
+   - [Bookings](#bookings)
+8. [Error Handling](#error-handling)
+9. [Notes and Common Issues](#notes-and-common-issues)
 
 ---
 
@@ -45,14 +46,24 @@ The **TDP popcorn-palace requirements document** specifies the core features:
 
 4. **PostgreSQL**:
    - The application expects a PostgreSQL database with:
-     - username: `popcorn-palace`
-     - password: `popcorn-palace`
-     - database: `popcorn-palace`
+      - username: `popcorn-palace`
+      - password: `popcorn-palace`
+      - database: `popcorn-palace`
    - These defaults are configured in `application.yaml`.
 
 5. **Port Availability**:
    - The application defaults to **port 8080** (defined in `application.yaml`).
 
+---
+
+## Getting the Code
+1. **Clone** the repository:
+   ```bash
+   git clone https://github.com/Maorazr/popcorn-palace.git
+   ```
+2. **Navigate** to the project root:
+   ```bash
+   cd popcorn-palace
 ---
 
 ## Local Setup
@@ -63,36 +74,36 @@ The **TDP popcorn-palace requirements document** specifies the core features:
    ```bash
    docker compose up -d
    ```
-This will pull and start a **Postgres** container listening on port **5432** with the credentials specified in `compose.yml`.
+   This will pull and start a **Postgres** container listening on port **5432** with the credentials specified in `compose.yml`.
 
 3. Verify the container is running:
    ```bash
    docker ps
    ```
-   You should see a container named something like `popcorn_palace_db` or similar.
+   You should see a container named something like `popcorn_palace-db-1` or similar.
 
 ### 2. Build and Run the Spring Boot App
-You have two approaches:
 
 #### (A) Using Maven Wrapper
-1. Navigate to the project’s root directory (the one containing `mvnw` and `pom.xml`).
-2. Compile and run tests (optional but recommended):
+1. **Build** and run tests (optional but recommended):
    ```bash
-   ./mvnw clean test
+   ./mvnw clean install
    ```
-3. Start the Spring Boot app:
+   This compiles the code and runs all tests. If you just want to check the project compiles without running tests, use `-DskipTests`.
+
+2. **Run** the Spring Boot app:
    ```bash
    ./mvnw spring-boot:run
    ```
-4. Once started, the app will be available at [http://localhost:8080](http://localhost:8080).
+3. Once started, the app will be available at [http://localhost:8080](http://localhost:8080).
 
 #### (B) Using Direct Maven Commands
-If you have Maven installed locally, the steps are the same:
-1. Compile and run tests:
+If you have Maven installed locally:
+1. **Build** and run tests:
    ```bash
-   mvn clean test
+   mvn clean install
    ```
-2. Run the application:
+2. **Run** the application:
    ```bash
    mvn spring-boot:run
    ```
@@ -115,6 +126,7 @@ If you prefer to build a JAR and then run it:
 
 ```
 .
+├── DeveloperNotes.md       <-- Developer notes and implementation insights 
 ├── Instructions.md         <-- (This file)
 ├── compose.yml             <-- Docker Compose file for PostgreSQL
 ├── mvnw / mvnw.cmd         <-- Maven wrapper scripts
@@ -155,11 +167,13 @@ Key points:
 ---
 
 ## Testing
-To run the tests, simply execute:
+To **run all tests**, simply execute:
 ```bash
 ./mvnw clean test
 ```
 (or `mvn clean test` if you have Maven installed).
+
+If you’ve already done `mvn clean install`, your tests have also been run.
 
 ---
 
@@ -171,59 +185,59 @@ Below is a **high-level** description of the main endpoints. For more details, s
 **Base URL**: `/movies`
 
 1. **GET** `/movies/all`
-    - Fetch all available movies.
-    - **200 OK** on success.
+   - Fetch all available movies.
+   - **200 OK** on success.
 
 2. **POST** `/movies`
-    - Create a new movie.
-    - Expects a JSON body with `title`, `genre`, `duration`, `rating`, and `releaseYear`.
-    - **200 OK** + created movie object on success.
-    - **409 CONFLICT** if a movie with the same title exists.
+   - Create a new movie.
+   - Expects a JSON body with `title`, `genre`, `duration`, `rating`, and `releaseYear`.
+   - **200 OK** + created movie object on success.
+   - **409 CONFLICT** if a movie with the same title exists.
 
 3. **POST** `/movies/update/{movieTitle}`
-    - Update an existing movie with the given title.
-    - **200 OK** on success.
-    - **404 NOT FOUND** if the movie does not exist.
+   - Update an existing movie with the given title.
+   - **200 OK** on success.
+   - **404 NOT FOUND** if the movie does not exist.
 
 4. **DELETE** `/movies/{movieTitle}`
-    - Delete a movie by title.
-    - **200 OK** on success.
-    - **404 NOT FOUND** if not found.
+   - Delete a movie by title.
+   - **200 OK** on success.
+   - **404 NOT FOUND** if not found.
 
 ### Showtimes
 **Base URL**: `/showtimes`
 
 1. **GET** `/showtimes/{showtimeId}`
-    - Fetch a showtime by its ID.
-    - **200 OK** on success.
-    - **404 NOT FOUND** if not found.
+   - Fetch a showtime by its ID.
+   - **200 OK** on success.
+   - **404 NOT FOUND** if not found.
 
 2. **POST** `/showtimes`
-    - Create a new showtime.
-    - Expects `movieId`, `theater`, `startTime`, `endTime`, `price`.
-    - **200 OK** + created showtime data on success.
-    - **409 CONFLICT** if there’s an overlapping showtime for the same theater.
-    - **404 NOT FOUND** if the associated `movieId` doesn’t exist.
+   - Create a new showtime.
+   - Expects `movieId`, `theater`, `startTime`, `endTime`, `price`.
+   - **200 OK** + created showtime data on success.
+   - **409 CONFLICT** if there’s an overlapping showtime for the same theater.
+   - **404 NOT FOUND** if the associated `movieId` doesn’t exist.
 
 3. **POST** `/showtimes/update/{showtimeId}`
-    - Update an existing showtime by ID.
-    - **200 OK** on success.
-    - **404 NOT FOUND** if not found.
+   - Update an existing showtime by ID.
+   - **200 OK** on success.
+   - **404 NOT FOUND** if not found.
 
 4. **DELETE** `/showtimes/{showtimeId}`
-    - Delete a showtime by its ID.
-    - **200 OK** on success.
-    - **404 NOT FOUND** if not found.
+   - Delete a showtime by its ID.
+   - **200 OK** on success.
+   - **404 NOT FOUND** if not found.
 
 ### Bookings
 **Base URL**: `/bookings`
 
 1. **POST** `/bookings`
-    - Create a new booking.
-    - Expects a JSON body with `showtimeId`, `seatNumber`, `userId`.
-    - **200 OK** + returns JSON with `"id": <UUID>` on success.
-    - **404 NOT FOUND** if the showtime does not exist.
-    - **409 CONFLICT** if the seat is already booked for that showtime.
+   - Create a new booking.
+   - Expects a JSON body with `showtimeId`, `seatNumber`, `userId`.
+   - **200 OK** + returns JSON with `"id": <UUID>` on success.
+   - **404 NOT FOUND** if the showtime does not exist.
+   - **409 CONFLICT** if the seat is already booked for that showtime.
 
 ---
 
@@ -242,5 +256,3 @@ Below is a **high-level** description of the main endpoints. For more details, s
 4. **Java Version**: Make sure to use Java **21** or update the `pom.xml` to your installed version.
 
 ---
-
-*That’s it! For detailed API usage, parameter descriptions, or advanced configuration, refer to the [Readme.md](./Readme.md) or review the code under `controller` and `service` packages.*
